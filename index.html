@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>EHL Demo</title>
+    <meta charset="utf-8">
+    <meta name="description" content="&lt;model-viewer&gt; template">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link type="text/css" href="./styles.css" rel="stylesheet"/>
+  </head>
+
+  <style>
+    .logo {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 9999;
+    }
+
+    .texture-btn {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      border-radius: 5px;
+      background-color: #e0e0e0;
+      border: none;
+      cursor: pointer;
+    }
+
+    .wall-btn {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      border-radius: 5px;
+      background-color: #e0e0e0;
+      border: none;
+      cursor: pointer;
+    }
+
+    .texture-btn:hover {
+      background-color: #d0d0d0;
+    }
+  </style>
+
+  <body>
+    <!-- <model-viewer> HTML element -->
+    <model-viewer id="helmet" src="Wall.glb" ar ar-modes="webxr scene-viewer quick-look" camera-controls poster="poster.webp" camera-target="0.76m 0.02m 0.76m" shadow-intensity="1" camera-orbit="47.06deg 70.8deg 1.485m" field-of-view="26.26deg">
+      <div class="progress-bar hide" slot="progress-bar">
+          <div class="update-bar"></div>
+      </div>
+      <button slot="ar-button" id="ar-button">
+          View in your space
+      </button>
+      <div id="ar-prompt">
+          <img src="ar_hand_prompt.png">
+      </div>
+    </model-viewer>  
+    <button id="white-btn" class="texture-btn">White Floor</button>
+    <button id="light-btn" class="texture-btn">Grey Floor</button>
+    <button id="dark-btn" class="texture-btn">Dark Floor</button>
+
+    <button id="white-wall-btn" class="wall-btn">White Wall</button>
+    <button id="orange-wall-btn" class="wall-btn">Orange Wall</button>
+    <button id="grey-wall-btn" class="wall-btn">Grey Wall</button>
+
+    <script type="module">
+      const modelViewerTexture1 = document.querySelector("model-viewer#helmet");
+
+      modelViewerTexture1.addEventListener("load", () => {
+        const modelMaterials = modelViewerTexture1.model.materials;
+
+        const createAndApplyTexture = async (channel, texturePath) => {
+          const texture = await modelViewerTexture1.createTexture(texturePath);
+          const material = modelMaterials[1]; 
+          if (channel.includes('base') || channel.includes('metallic')) {
+            material.pbrMetallicRoughness[channel].setTexture(texture);
+          } else {
+            material[channel].setTexture(texture);
+          }
+        }
+
+        document.querySelector('#white-btn').addEventListener('click', () => {
+          createAndApplyTexture('baseColorTexture', 'Floor1.jpg');
+        });
+
+        document.querySelector('#light-btn').addEventListener('click', () => {
+          createAndApplyTexture('baseColorTexture', 'Floor2.jpg');
+        });
+
+
+        document.querySelector('#dark-btn').addEventListener('click', () => {
+          createAndApplyTexture('baseColorTexture', 'Floor3.jpg');
+        });
+
+        document.querySelector('#white-wall-btn').addEventListener('click', () => {
+          const materialIndices = [0];
+          const colorString = "#ffffff"; // White color
+          materialIndices.forEach((materialIndex) => {
+            if (materialIndex < modelMaterials.length) {
+              const material = modelMaterials[materialIndex];
+              material.pbrMetallicRoughness.setBaseColorFactor(colorString);
+            }
+          });
+        });
+
+        document.querySelector('#orange-wall-btn').addEventListener('click', () => {
+          const materialIndices = [0];
+          const colorString = "#ffa500"; // Orange color
+          materialIndices.forEach((materialIndex) => {
+            if (materialIndex < modelMaterials.length) {
+              const material = modelMaterials[materialIndex];
+              material.pbrMetallicRoughness.setBaseColorFactor(colorString);
+            }
+          });
+        });
+
+        document.querySelector('#grey-wall-btn').addEventListener('click', () => {
+          const materialIndices = [0];
+          const colorString = "#808080"; // Grey color
+          materialIndices.forEach((materialIndex) => {
+            if (materialIndex < modelMaterials.length) {
+              const material = modelMaterials[materialIndex];
+              material.pbrMetallicRoughness.setBaseColorFactor(colorString);
+            }
+          });
+        });
+      });
+    </script>
+
+    <script src="script.js"></script>
+    <!-- Loads <model-viewer> for browsers: -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.0.1/model-viewer.min.js"></script>
+  </body>
+</html>
